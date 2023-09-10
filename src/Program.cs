@@ -25,53 +25,63 @@ namespace Icod.Suffix {
 
 		[System.STAThread]
 		public static System.Int32 Main( System.String[] args ) {
-			if ( null == args ) {
-				args = new System.String[ 0 ];
-			}
 			var len = args.Length;
-			if ( ( 1 <= len ) && ( new System.String[] { "--copyright", "-c", "/c" }.Contains( args[ 0 ], System.StringComparer.OrdinalIgnoreCase ) ) ) {
+			if ( ( 7 < len ) || ( len < 1 ) ) {
+				PrintUsage();
+				return 1;
+			}
+
+			var processor = new Icod.Argh.Processor(
+				new Icod.Argh.Definition[] {
+					new Icod.Argh.Definition( "help", new System.String[] { "-h", "--help", "/help" } ),
+					new Icod.Argh.Definition( "copyright", new System.String[] { "-c", "--copyright", "/copyright" } ),
+					new Icod.Argh.Definition( "input", new System.String[] { "-i", "--input", "/input" } ),
+					new Icod.Argh.Definition( "output", new System.String[] { "-o", "--output", "/output" } ),
+					new Icod.Argh.Definition( "suffix", new System.String[] { "-s", "--suffix", "/suffix" } ),
+					new Icod.Argh.Definition( "trim", new System.String[] { "-t", "--trim", "/trim" } ),
+				},
+				System.StringComparer.OrdinalIgnoreCase
+			);
+			processor.Parse( args );
+			if ( processor.Contains( "help" ) ) {
+				PrintUsage();
+				return 1;
+			} else if ( processor.Contains( "copyright" ) ) {
 				PrintCopyright();
 				return 1;
-			} else if ( ( 1 <= len ) && ( new System.String[] { "--help", "-h", "/h" }.Contains( args[ 0 ], System.StringComparer.OrdinalIgnoreCase ) ) ) {
-				PrintUsage();
-				return 1;
-			} else if ( ( len < 2 ) || ( 6 < len ) ) {
-				PrintUsage();
-				return 1;
 			}
-			--len;
+
 			System.String? inputPathName = null;
-			System.String? outputPathName = null;
-			System.String? suffix = System.String.Empty;
-			System.Boolean trim = false;
-			System.String @switch;
-			System.Int32 i = -1;
-			do {
-				@switch = args[ ++i ];
-				if ( new System.String[] { "--help", "-h", "/h" }.Contains( inputPathName, System.StringComparer.OrdinalIgnoreCase ) ) {
-					PrintUsage();
-					return 1;
-				} else if ( new System.String[] { "--copyright", "-c", "/c" }.Contains( inputPathName, System.StringComparer.OrdinalIgnoreCase ) ) {
-					PrintCopyright();
-					return 1;
-				} else if ( "--input".Equals( @switch, System.StringComparison.OrdinalIgnoreCase ) ) {
-					inputPathName = args[ ++i ].TrimToNull();
-				} else if ( "--output".Equals( @switch, System.StringComparison.OrdinalIgnoreCase ) ) {
-					outputPathName = args[ ++i ].TrimToNull();
-				} else if ( "--suffix".Equals( @switch, System.StringComparison.OrdinalIgnoreCase ) ) {
-					suffix = args[ ++i ];
-				} else if ( "--trim".Equals( @switch, System.StringComparison.OrdinalIgnoreCase ) ) {
-					trim = true;
-					i++;
-				} else {
+			if ( processor.Contains( "input" ) ) {
+				inputPathName = processor.Value( "input" ).TrimToNull();
+				if ( System.String.IsNullOrEmpty( inputPathName ) ) {
 					PrintUsage();
 					return 1;
 				}
-			} while ( i < len );
+			}
+			System.String? outputPathName = null;
+			if ( processor.Contains( "output" ) ) {
+				outputPathName = processor.Value( "output" ).TrimToNull();
+				if ( System.String.IsNullOrEmpty( inputPathName ) ) {
+					PrintUsage();
+					return 1;
+				}
+			}
+			if ( !processor.Contains( "suffix" ) ) {
+				PrintUsage();
+				return 1;
+			}
+			var probe = processor.Value( "suffix" ).TrimToNull();
+			if ( System.String.IsNullOrEmpty( probe ) ) {
+				PrintUsage();
+				return 1;
+			}
+			System.String suffix = probe!;
+			System.Boolean trim = processor.Contains( "trim" );
 
-			System.Func<System.String?, System.String?> trimmer;
+			System.Func<System.String, System.String?> trimmer;
 			if ( trim ) {
-				trimmer = x => x?.TrimToNull();
+				trimmer = x => x.TrimToNull();
 			} else {
 				trimmer = x => x;
 			}
@@ -122,7 +132,7 @@ namespace Icod.Suffix {
 				"",
 				"This program is distributed in the hope that it will be useful,",
 				"but WITHOUT ANY WARRANTY; without even the implied warranty of",
-				"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the",
+				"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the",
 				"GNU General Public License for more details.",
 				"",
 				"You should have received a copy of the GNU General Public License",
@@ -134,7 +144,7 @@ namespace Icod.Suffix {
 		}
 
 		#region io
-		private static System.Collections.Generic.IEnumerable<System.String> ReadStdIn( System.Func<System.String?, System.String?> trimFunc ) {
+		private static System.Collections.Generic.IEnumerable<System.String> ReadStdIn( System.Func<System.String, System.String?> trimFunc ) {
 			var line = System.Console.In.ReadLine();
 			while ( null != line ) {
 				line = trimFunc( line );
@@ -144,11 +154,7 @@ namespace Icod.Suffix {
 				line = System.Console.In.ReadLine();
 			}
 		}
-		private static System.Collections.Generic.IEnumerable<System.String> ReadFile( System.String? filePathName, System.Func<System.String?, System.String?> trimFunc ) {
-			filePathName = filePathName?.TrimToNull();
-			if ( System.String.IsNullOrEmpty( filePathName ) ) {
-				throw new System.ArgumentNullException( nameof( filePathName ) );
-			}
+		private static System.Collections.Generic.IEnumerable<System.String> ReadFile( System.String filePathName, System.Func<System.String, System.String?> trimFunc ) {
 			using ( var file = System.IO.File.Open( filePathName, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read ) ) {
 				using ( var reader = new System.IO.StreamReader( file, System.Text.Encoding.UTF8, true, theBufferSize, true ) ) {
 					var line = reader.ReadLine();
@@ -168,11 +174,7 @@ namespace Icod.Suffix {
 				System.Console.Out.WriteLine( datum );
 			}
 		}
-		private static void WriteFile( System.String? filePathName, System.Collections.Generic.IEnumerable<System.String> data ) {
-			filePathName = filePathName?.TrimToNull();
-			if ( System.String.IsNullOrEmpty( filePathName ) ) {
-				throw new System.ArgumentNullException( nameof( filePathName ) );
-			}
+		private static void WriteFile( System.String filePathName, System.Collections.Generic.IEnumerable<System.String> data ) {
 			using ( var file = System.IO.File.Open( filePathName, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write, System.IO.FileShare.None ) ) {
 				_ = file.Seek( 0, System.IO.SeekOrigin.Begin );
 				using ( var writer = new System.IO.StreamWriter( file, System.Text.Encoding.UTF8, theBufferSize, true ) ) {
@@ -187,7 +189,7 @@ namespace Icod.Suffix {
 		}
 		#endregion io
 
-		private static System.String? TrimToNull( this System.String @string ) {
+		private static System.String? TrimToNull( this System.String? @string ) {
 			if ( System.String.IsNullOrEmpty( @string ) ) {
 				return null;
 			}
