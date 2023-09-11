@@ -43,60 +43,56 @@ namespace Icod.Suffix {
 				System.StringComparer.OrdinalIgnoreCase
 			);
 			processor.Parse( args );
+
 			if ( processor.Contains( "help" ) ) {
 				PrintUsage();
 				return 1;
 			} else if ( processor.Contains( "copyright" ) ) {
 				PrintCopyright();
 				return 1;
-			}
-
-			System.String? inputPathName = null;
-			if ( processor.Contains( "input" ) ) {
-				inputPathName = processor.Value( "input" ).TrimToNull();
-				if ( System.String.IsNullOrEmpty( inputPathName ) ) {
-					PrintUsage();
-					return 1;
-				}
-			}
-			System.String? outputPathName = null;
-			if ( processor.Contains( "output" ) ) {
-				outputPathName = processor.Value( "output" ).TrimToNull();
-				if ( System.String.IsNullOrEmpty( inputPathName ) ) {
-					PrintUsage();
-					return 1;
-				}
-			}
-			if ( !processor.Contains( "suffix" ) ) {
+			} else if ( len < 2 ) {
 				PrintUsage();
 				return 1;
 			}
-			var probe = processor.Value( "suffix" ).TrimToNull();
-			if ( System.String.IsNullOrEmpty( probe ) ) {
-				PrintUsage();
-				return 1;
-			}
-			System.String suffix = probe!;
-			System.Boolean trim = processor.Contains( "trim" );
 
+			var trim = processor.Contains( "trim" );
 			System.Func<System.String, System.String?> trimmer;
 			if ( trim ) {
 				trimmer = x => x.TrimToNull();
 			} else {
 				trimmer = x => x;
 			}
+
+			if (
+				( !processor.TryGetValue( "suffix", false, out var suffix ) )
+				|| System.String.IsNullOrEmpty( suffix )
+			) {
+				PrintUsage();
+				return 1;
+			}
+
 			System.Func<System.String?, System.Collections.Generic.IEnumerable<System.String>> reader;
-			if ( System.String.IsNullOrEmpty( inputPathName ) ) {
-				reader = a => ReadStdIn( trimmer );
+			if ( processor.TryGetValue( "input", true, out var inputPathName ) ) {
+				if ( System.String.IsNullOrEmpty( inputPathName ) ) {
+					PrintUsage();
+					return 1;
+				} else {
+					reader = a => ReadFile( a!, trimmer );
+				}
 			} else {
-				reader = a => ReadFile( a!, trimmer );
+				reader = a => ReadStdIn( trimmer );
 			}
 
 			System.Action<System.String?, System.Collections.Generic.IEnumerable<System.String>> writer;
-			if ( System.String.IsNullOrEmpty( outputPathName ) ) {
-				writer = ( a, b ) => WriteStdOut( b );
+			if ( processor.TryGetValue( "output", true, out var outputPathName ) ) {
+				if ( System.String.IsNullOrEmpty( outputPathName ) ) {
+					PrintUsage();
+					return 1;
+				} else {
+					writer = ( a, b ) => WriteFile( a!, b );
+				}
 			} else {
-				writer = ( a, b ) => WriteFile( a!, b );
+				writer = ( a, b ) => WriteStdOut( b );
 			}
 
 			writer(
