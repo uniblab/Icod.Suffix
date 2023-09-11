@@ -106,14 +106,14 @@ namespace Icod.Suffix {
 
 		private static void PrintUsage() {
 			System.Console.Error.WriteLine( "No, no, no! Use it like this, Einstein:" );
-			System.Console.Error.WriteLine( "Suffix.exe --help" );
-			System.Console.Error.WriteLine( "Suffix.exe --copyright" );
-			System.Console.Error.WriteLine( "Suffix.exe --suffix theSuffix [--input inputFilePathName] [--output outputFilePathName] [--trim]" );
+			System.Console.Error.WriteLine( "Suffix.exe (-h | --help | /help)" );
+			System.Console.Error.WriteLine( "Suffix.exe (-c | --copyright | /copyright)" );
+			System.Console.Error.WriteLine( "Suffix.exe (-s | --suffix | /suffix) theSuffix [(-i | --input | /input) inputFilePathName] [(-o | --output | /output) outputFilePathName] [(-t | --trim | /trim)]" );
 			System.Console.Error.WriteLine( "Suffix.exe appends the specified string to each line of input." );
 			System.Console.Error.WriteLine( "inputFilePathName and outputFilePathName may be relative or absolute paths." );
 			System.Console.Error.WriteLine( "If inputFilePathName is omitted then input is read from StdIn." );
 			System.Console.Error.WriteLine( "If outputFilePathName is omitted then output is written to StdOut." );
-			System.Console.Error.WriteLine( "If --trim switch is specified, then input lines are trimmed of all surrounding whitespace and empty strings are ignored." );
+			System.Console.Error.WriteLine( "If trim switch is specified, then input lines are trimmed of all surrounding whitespace and empty strings are ignored." );
 		}
 		private static void PrintCopyright() {
 			var copy = new System.String[] {

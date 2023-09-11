@@ -2,18 +2,18 @@
 Suffix.exe appends the specified string to each line of input.
 
 ## Usage
-`Suffix.exe --help`
+`Suffix.exe (-h | --help | /help)`
 Displays this text.
 
-`Suffix.exe --copyright`
+`Suffix.exe (-c | --copyright | /copyright)`
 Displays copyright and licensing information.
 
-`Suffix.exe --suffix theSuffix [--input inputFilePathName] [--output outputFilePathName] [--trim]`
+`Suffix.exe (-s | --suffix | /suffix) theSuffix [(-i | --input | /input) inputFilePathName] [(-o | --output | /output) outputFilePathName] [(-t | --trim | /trim)]`
 Suffix.exe appends the specified string to each line of input.
 inputFilePathName and outputFilePathName may be relative or absolute paths.
 If inputFilePathName is omitted then input is read from StdIn.
 If outputFilePathName is omitted then output is written to StdOut.
-If --trim switch is specified, then input lines are trimmed of all surrounding whitespace and empty strings are ignored.
+If trim switch is specified, then input lines are trimmed of all surrounding whitespace and empty strings are ignored.
 
 ## Copyright and Licensing
 Suffix.exe appends the specified string to each line of input.
