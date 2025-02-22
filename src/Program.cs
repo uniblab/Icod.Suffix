@@ -1,5 +1,5 @@
 ﻿// Suffix.exe appends the specified string to each line of input.
-// Copyright (C) 2023 Timothy J. Bruce
+// Copyright (C) 2025 Timothy J. Bruce
 
 /*
     This program is free software: you can redistribute it and/or modify
@@ -120,7 +120,7 @@ namespace Icod.Suffix {
 		private static void PrintCopyright() {
 			var copy = new System.String[] {
 				"Suffix.exe appends the specified string to each line of input.",
-				"Copyright (C) 2023 Timothy J. Bruce",
+				"Copyright (C) 2025 Timothy J. Bruce",
 				"",
 				"",
 				"This program is free software: you can redistribute it and / or modify",

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 	Suffix.exe appends the specified string to each line of input.
-	Copyright (C) 2023 Timothy J. Bruce
+	Copyright (C) 2025 Timothy J. Bruce
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
@@ -11,15 +11,37 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <StartupObject>Icod.Suffix.Program</StartupObject>
+    <Title>Icod Suffix</Title>
+    <Authors>Timothy J. Bruce &lt;uniblab@hotmail.com&gt;</Authors>
+    <Copyright>Copyright (c) 2025</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/uniblab/Icod.Suffix</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <Optimize>False</Optimize>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <Optimize>True</Optimize>
+	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="Icod.Argh" Version="1.1.1" />
-	  <PackageReference Include="Icod.Helpers" Version="1.0.0" />
+	  <PackageReference Include="Icod.Argh" Version="1.1.2" />
 	</ItemGroup>
 	<ItemGroup>
 	  <None Update="Icod.Suffix.License">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	  <None Update="README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="README\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Icod.Helpers\Icod.Helpers.csproj" />
 	</ItemGroup>
 
 </Project>
